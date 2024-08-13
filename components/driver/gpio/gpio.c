@@ -945,6 +945,25 @@ esp_err_t gpio_sleep_sel_dis(gpio_num_t gpio_num)
     return ESP_OK;
 }
 
+esp_err_t gpio_isr_handler_add_disabled(gpio_num_t gpio_num, gpio_isr_t isr_handler, void *args)
+{
+    GPIO_CHECK(gpio_context.gpio_isr_func != NULL, "GPIO isr service is not installed, call gpio_install_isr_service() first", ESP_ERR_INVALID_STATE);
+    GPIO_CHECK(GPIO_IS_VALID_GPIO(gpio_num), "GPIO number error", ESP_ERR_INVALID_ARG);
+    portENTER_CRITICAL(&gpio_context.gpio_spinlock);
+    gpio_intr_disable(gpio_num);
+    if (gpio_context.gpio_isr_func) {
+        gpio_context.gpio_isr_func[gpio_num].fn = isr_handler;
+        gpio_context.gpio_isr_func[gpio_num].args = args;
+    }
+    portEXIT_CRITICAL(&gpio_context.gpio_spinlock);
+    return ESP_OK;
+}
+
+esp_err_t gpio_intr_clear( gpio_num_t gpio_num ){
+	gpio_hal_clear_intr_status_bit(gpio_context.gpio_hal, gpio_num);
+	return ESP_OK;
+}
+
 #if CONFIG_GPIO_ESP32_SUPPORT_SWITCH_SLP_PULL
 esp_err_t gpio_sleep_pupd_config_apply(gpio_num_t gpio_num)
 {
