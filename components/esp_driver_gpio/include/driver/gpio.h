@@ -520,6 +520,8 @@ esp_err_t gpio_sleep_set_direction(gpio_num_t gpio_num, gpio_mode_t mode);
  */
 esp_err_t gpio_sleep_set_pull_mode(gpio_num_t gpio_num, gpio_pull_mode_t pull);
 
+esp_err_t gpio_intr_clear( gpio_num_t gpio_num );
+esp_err_t gpio_isr_handler_add_disabled(gpio_num_t gpio_num, gpio_isr_t isr_handler, void *args);
 #if SOC_GPIO_SUPPORT_DEEPSLEEP_WAKEUP
 
 #define GPIO_IS_DEEP_SLEEP_WAKEUP_VALID_GPIO(gpio_num)    ((gpio_num >= 0) && \
